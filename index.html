@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grafo de Cidades (Não Direcionado)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        #container {
+            text-align: center;
+        }
+
+        #graph-container {
+            width: 400px;
+            height: 400px;
+            border: 1px solid #ccc;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .node {
+            width: 40px;
+            height: 40px;
+            background-color: #3498db;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .edge {
+            position: absolute;
+            width: 2px;
+            background-color: #3498db;
+        }
+
+        select, button {
+            margin: 10px;
+            padding: 8px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="container">
+    <div id="graph-container"></div>
+
+    <select id="origem">
+        <option value="Feliz">Feliz</option>
+        <option value="Vale Real">Vale Real</option>
+        <option value="Sao Sebastiao do Cai">S.S do Caí</option>
+        <option value="Bom Principio">Bom Princípio</option>
+        <option value="Tupandi">Tupandi</option>
+        <option value="Alto Feliz">Alto Feliz</option>
+        <option value="Sao Vendelino">São Vendelino</option>
+    </select>
+
+    <select id="destino">
+        <option value="Feliz">Feliz</option>
+        <option value="Vale Real">Vale Real</option>
+        <option value="Sao Sebastiao do Cai">S.S do Caí</option>
+        <option value="Bom Principio">Bom Princípio</option>
+        <option value="Tupandi">Tupandi</option>
+        <option value="Alto Feliz">Alto Feliz</option>
+        <option value="Sao Vendelino">São Vendelino</option>
+    </select>
+
+    <button onclick="realizarAcao()">Realizar Ação</button>
+</div>
+
+<script>
+var ocupado = false;
+
+class Grafo {
+    constructor() {
+        this.vertices = new Map();
+    }
+
+    adicionarVertice(vertice) {
+        // Adiciona um vértice com a informação "visitado"
+        this.vertices.set(vertice, { vizinhos: new Map(), visitado: false });
+    }
+
+    adicionarAresta(vertice1, vertice2, distancia) {
+        if (!this.vertices.has(vertice1) || !this.vertices.has(vertice2)) {
+            throw new Error("Os vértices fornecidos devem existir no grafo.");
+        }
+
+        this.vertices.get(vertice1).vizinhos.set(vertice2, distancia);
+        this.vertices.get(vertice2).vizinhos.set(vertice1, distancia);
+    }
+
+    obterVizinhos(vertice) {
+        if (!this.vertices.has(vertice)) {
+            throw new Error("O vértice fornecido não existe no grafo: " + vertice);
+        }
+
+        return Array.from(this.vertices.get(vertice).vizinhos.keys());
+    }
+
+    obterDistancia(vertice1, vertice2) {
+        return this.vertices.get(vertice1).vizinhos.get(vertice2);
+    }
+}
+
+// Restante do código...
+
+// Faz as conexoes entre as cidades //
+const meuGrafo = new Grafo();
+meuGrafo.adicionarVertice("Feliz");
+meuGrafo.adicionarVertice("Alto Feliz");
+meuGrafo.adicionarVertice("Sao Sebastiao do Cai");
+meuGrafo.adicionarVertice("Bom Principio");
+meuGrafo.adicionarVertice("Tupandi");
+meuGrafo.adicionarVertice("Vale Real");
+meuGrafo.adicionarVertice("Sao Vendelino");
+meuGrafo.adicionarAresta("Feliz", "Sao Sebastiao do Cai", 10.5);
+meuGrafo.adicionarAresta("Feliz", "Alto Feliz", 8.5);
+meuGrafo.adicionarAresta("Feliz", "Bom Principio", 4);
+meuGrafo.adicionarAresta("Feliz", "Vale Real", 6);
+meuGrafo.adicionarAresta("Bom Principio", "Sao Sebastiao do Cai", 5);
+meuGrafo.adicionarAresta("Bom Principio", "Tupandi", 6.80);
+meuGrafo.adicionarAresta("Bom Principio", "Sao Vendelino", 11);
+meuGrafo.adicionarAresta("Sao Sebastiao do Cai", "Tupandi", 9.2);
+meuGrafo.adicionarAresta("Vale Real", "Alto Feliz", 6);
+
+
+function realizarAcao() {
+    if (!ocupado) {
+        ocupado = true;
+        var origemValue = document.getElementById('origem').value;
+        var destinoValue = document.getElementById('destino').value;
+
+        if (origemValue == destinoValue) {
+            alert("O destino não pode ser igual à origem");
+            return;
+        }
+
+        const caminhoMenorDistancia = encontrarCaminhoMenorDistancia(origemValue, destinoValue, [origemValue]);
+        exibirNaTela(caminhoMenorDistancia);
+
+        ocupado = false;
+    }
+}
+
+function encontrarCaminhoMenorDistancia(origem, destino, caminhoAtual) {
+    if (origem === destino) {
+        return caminhoAtual;
+    }
+
+    const vizinhos = meuGrafo.obterVizinhos(origem);
+    let menorCaminho = null;
+    let menorDistancia = Number.POSITIVE_INFINITY;
+
+    for (const vizinho of vizinhos) {
+        if (!caminhoAtual.includes(vizinho)) {
+            const distanciaAresta = meuGrafo.obterDistancia(origem, vizinho);
+            const caminhoEncontrado = encontrarCaminhoMenorDistancia(vizinho, destino, [...caminhoAtual, vizinho]);
+
+            if (caminhoEncontrado) {
+                const distanciaTotal = calcularDistanciaTotal(caminhoEncontrado, distanciaAresta);
+                if (distanciaTotal < menorDistancia) {
+                    menorDistancia = distanciaTotal;
+                    menorCaminho = caminhoEncontrado;
+                }
+            }
+        }
+    }
+
+    return menorCaminho;
+}
+
+function calcularDistanciaTotal(caminho, distanciaAresta) {
+    let distanciaTotal = 0;
+    for (let i = 0; i < caminho.length - 1; i++) {
+        distanciaTotal += meuGrafo.obterDistancia(caminho[i], caminho[i + 1]);
+    }
+    distanciaTotal += distanciaAresta; // Adiciona a última aresta
+    return distanciaTotal;
+}
+
+function exibirNaTela(caminho) {
+    let caminhoString = '';
+    caminho.forEach(element => {
+        caminhoString += element + "<br>";
+    });
+
+    document.getElementById("graph-container").innerHTML = caminhoString;
+}
+
+</script>
+
+</body>
+</html>
