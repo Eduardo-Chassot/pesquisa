@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grafo de Cidades (Não Direcionado)</title>
+    <title>Grafos</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -127,14 +127,20 @@ meuGrafo.adicionarVertice("Bom Principio");
 meuGrafo.adicionarVertice("Tupandi");
 meuGrafo.adicionarVertice("Vale Real");
 meuGrafo.adicionarVertice("Sao Vendelino");
+
 meuGrafo.adicionarAresta("Feliz", "Sao Sebastiao do Cai", 10.5);
 meuGrafo.adicionarAresta("Feliz", "Alto Feliz", 8.5);
 meuGrafo.adicionarAresta("Feliz", "Bom Principio", 4);
 meuGrafo.adicionarAresta("Feliz", "Vale Real", 6);
+
+meuGrafo.adicionarAresta("Sao Vendelino", "Alto Feliz", 6);
+
 meuGrafo.adicionarAresta("Bom Principio", "Sao Sebastiao do Cai", 5);
 meuGrafo.adicionarAresta("Bom Principio", "Tupandi", 6.80);
 meuGrafo.adicionarAresta("Bom Principio", "Sao Vendelino", 11);
+
 meuGrafo.adicionarAresta("Sao Sebastiao do Cai", "Tupandi", 9.2);
+
 meuGrafo.adicionarAresta("Vale Real", "Alto Feliz", 6);
 
 
@@ -188,7 +194,7 @@ function calcularDistanciaTotal(caminho, distanciaAresta) {
     for (let i = 0; i < caminho.length - 1; i++) {
         distanciaTotal += meuGrafo.obterDistancia(caminho[i], caminho[i + 1]);
     }
-    distanciaTotal += distanciaAresta; // Adiciona a última aresta
+    distanciaTotal += distanciaAresta;a
     return distanciaTotal;
 }
 
